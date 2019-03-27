@@ -13,6 +13,7 @@ COPY --from=builder /src /src
 
 ENV WS_SECRET=trustlines
 ENV VERBOSITY=2
+ENV RPC_NODE=parity
 
 WORKDIR /src
 CMD ["./start.sh"]

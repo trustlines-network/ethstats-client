@@ -2,4 +2,4 @@
 
 set -e
 
-exec /usr/bin/env WS_SERVER=ws://$WS_USER:$WS_PASSWORD@217.24.224.17 npm start
+exec /usr/bin/env WS_SERVER=ws://$WS_USER:$WS_PASSWORD@142.93.106.131 npm start
