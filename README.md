@@ -18,7 +18,7 @@ INSTANCE_NAME=please-choose-a-nice-name-here
 
 Please start the docker container with:
 ```
-docker run -d --restart=always --env-file netstats-env --link trustlines-testnet:parity trustlines/netstats-client
+docker run --name netstats -d --restart=always --env-file netstats-env --link trustlines-testnet:parity trustlines/netstats-client
 ```
 
 This command assumes that your container running parity is named
