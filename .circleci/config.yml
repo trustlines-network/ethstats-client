@@ -1,0 +1,56 @@
+version: 2.1
+
+executors:
+  ubuntu-builder:
+    docker:
+      - image: circleci/node:10.15
+    working_directory: ~/repo
+
+# define some common commands
+# see https://circleci.com/docs/2.0/configuration-reference/#commands-requires-version-21
+commands:
+  build-docker-image:
+    parameters:
+      local-name:
+        type: string
+    steps:
+      - run:
+          name: Build docker image
+          command: |
+            docker build . -t << parameters.local-name >>
+  upload-docker-image:
+    parameters:
+      local-name:
+        type: string
+      remote-name:
+        type: string
+    steps:
+      - run:
+          name: Upload docker image
+          command: |
+            docker tag << parameters.local-name >> << parameters.remote-name >>
+            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+            docker push << parameters.remote-name >>
+
+jobs:
+  build-and-upload:
+    executor: ubuntu-builder
+    steps:
+      - setup_remote_docker
+      - checkout
+      - build-docker-image:
+          local-name: "netstats-client"
+      - upload-docker-image:
+          local-name: "netstats-client"
+          remote-name: "trustlines/netstats-client:$CIRCLE_BRANCH$CIRCLE_BUILD_NUM"
+      - upload-docker-image:
+          local-name: "netstats-client"
+          remote-name: "trustlines/netstats-client:$CIRCLE_BRANCH"
+
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build-and-upload:
+          context: docker-credentials
