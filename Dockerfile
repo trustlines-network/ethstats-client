@@ -13,7 +13,8 @@ COPY --from=builder /src /src
 
 ENV WS_SECRET=trustlines
 ENV VERBOSITY=2
-ENV RPC_NODE=parity
+ENV RPC_HOST=parity
+ENV RPC_PORT=8545
 
 WORKDIR /src
 CMD ["./start.sh"]
