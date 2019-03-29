@@ -24,13 +24,17 @@ commands:
         type: string
       remote-name:
         type: string
+      tag:
+        type: string
     steps:
       - run:
           name: Upload docker image
           command: |
-            docker tag << parameters.local-name >> << parameters.remote-name >>
+            tag=$(echo << parameters.tag >> | sed -e 's=/=-=')
+            remote=<< parameters.remote-name >>:$tag
+            docker tag << parameters.local-name >> $remote
             docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-            docker push << parameters.remote-name >>
+            docker push $remote
 
 jobs:
   build-and-upload:
@@ -42,10 +46,12 @@ jobs:
           local-name: "netstats-client"
       - upload-docker-image:
           local-name: "netstats-client"
-          remote-name: "trustlines/netstats-client:$CIRCLE_BRANCH$CIRCLE_BUILD_NUM"
+          remote-name: "trustlines/netstats-client"
+          tag: "$CIRCLE_BRANCH$CIRCLE_BUILD_NUM"
       - upload-docker-image:
           local-name: "netstats-client"
-          remote-name: "trustlines/netstats-client:$CIRCLE_BRANCH"
+          remote-name: "trustlines/netstats-client"
+          tag: "$CIRCLE_BRANCH"
 
 
 workflows:
