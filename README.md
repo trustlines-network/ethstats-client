@@ -26,3 +26,9 @@ docker run --name netstats -d --restart=always --env-file netstats-env --link tr
 
 This command assumes that your container running parity is named
 `trustlines-testnet`. Please adapt the command if necessary.
+
+E.g. with the following command you could connect to a parity instance running on the local machine:
+
+```
+docker run --name netstats -d --restart=always --env-file netstats-env -eRPC_HOST=127.0.0.1 --network=host trustlines/netstats-client
+```
