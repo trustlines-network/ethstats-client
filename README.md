@@ -21,7 +21,7 @@ INSTANCE_NAME=please-choose-a-nice-name-here
 
 Please start the docker container with:
 ```
-docker run --name netstats -d --restart=always --env-file netstats-env --link trustlines-testnet:parity trustlines/netstats-client
+docker run --name netstats -d --restart=always --env-file netstats-env --link trustlines-testnet:parity trustlines/netstats-client:master
 ```
 
 This command assumes that your container running parity is named
@@ -30,5 +30,5 @@ This command assumes that your container running parity is named
 E.g. with the following command you could connect to a parity instance running on the local machine:
 
 ```
-docker run --name netstats -d --restart=always --env-file netstats-env -eRPC_HOST=127.0.0.1 --network=host trustlines/netstats-client
+docker run --name netstats -d --restart=always --env-file netstats-env -eRPC_HOST=127.0.0.1 --network=host trustlines/netstats-client:master
 ```
