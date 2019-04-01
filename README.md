@@ -2,13 +2,16 @@
 
 This is the backend service which runs along with parity and tracks the
 network status, fetches information through JSON-RPC and connects through
-WebSockets to the ethstats-server. You can view the ethstats page for the [trustlines testnet here](http://142.93.106.131)
+WebSockets to the ethstats-server. You can view the ethstats page for the
+[trustlines testnet here](http://142.93.106.131)
 
 ## Installation as docker container
 
 The following assumes you're running a parity node inside docker either as
-validator or as observer and you have already received your credentials from  First, create a file named `netstats-env` with the
-following content:
+validator or as observer and you have already received your credentials from the
+trustlines foundation.
+
+First, create a file named `netstats-env` with the following content:
 
 ```
 WS_USER=username-as-provided-by-the-foundation                                                                    
