@@ -18,6 +18,11 @@ WS_USER=username-as-provided-by-the-foundation
 WS_PASSWORD=password-as-provided-by-the-foundation
 INSTANCE_NAME=please-choose-a-nice-name-here                                                      
 ```
+In case you want to show your validator status (mining is active and coinbase) 
+then add the following line (default setting is true):
+```
+HIDE_VALIDATOR_STATUS=false
+```
 
 Please start the docker container with:
 ```
