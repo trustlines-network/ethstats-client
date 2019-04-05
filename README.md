@@ -3,7 +3,7 @@
 This is the backend service which runs along with parity and tracks the
 network status, fetches information through JSON-RPC and connects through
 WebSockets to the ethstats-server. You can view the ethstats page for the
-[trustlines testnet here](http://142.93.106.131)
+[trustlines testnet here](https://netstatstc1.trustlines.foundation/)
 
 ## Installation as docker container
 
