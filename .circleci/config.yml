@@ -39,7 +39,7 @@ jobs:
   build-image:
     executor: ubuntu-builder
     environment:
-      LOCAL_IMAGE: netstats-client
+      LOCAL_IMAGE: netstats-client-next
     steps:
       - setup_remote_docker
       - checkout
@@ -61,13 +61,13 @@ jobs:
   deploy-image:
     executor: ubuntu-builder
     environment:
-      LOCAL_IMAGE: netstats-client
+      LOCAL_IMAGE: netstats-client-next
     working_directory: ~/repo
     steps:
       - run:
           name: set DOCKER_REPO
           command: |
-            echo ': \"${DOCKER_REPO:=trustlines/netstats-client}\"' >> ${BASH_ENV}
+            echo ': \"${DOCKER_REPO:=trustlines/netstats-client-next}\"' >> ${BASH_ENV}
           # this allows us to set DOCKER_REPO from circleci when building in a
           # fork. makes testing easier.
       - upload-docker-image
@@ -75,7 +75,7 @@ jobs:
   compare-image:
     executor: ubuntu-builder
     environment:
-      LOCAL_IMAGE: netstats-client
+      LOCAL_IMAGE: netstats-client-next
     working_directory: ~/repo
     steps:
       - setup_remote_docker
@@ -91,11 +91,11 @@ jobs:
       - run:
           name: Fetch latest pre-release
           command: |
-            docker pull trustlines/netstats-client:pre-release
+            docker pull trustlines/netstats-client-next:pre-release
       - run:
           name: Compute image tree summaries
           command: |
-            .circleci/show-docker-tree trustlines/netstats-client:pre-release >/tmp/tree-pre-release
+            .circleci/show-docker-tree trustlines/netstats-client-next:pre-release >/tmp/tree-pre-release
             .circleci/show-docker-tree $LOCAL_IMAGE >/tmp/tree-local
       - run:
           name: Compare image tree summaries
@@ -105,7 +105,7 @@ jobs:
   deploy-release-image:
     executor: ubuntu-builder
     environment:
-      LOCAL_IMAGE: netstats-client
+      LOCAL_IMAGE: netstats-client-next
     working_directory: ~/repo
     steps:
       - run:
