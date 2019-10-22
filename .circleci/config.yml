@@ -9,54 +9,151 @@ executors:
 # define some common commands
 # see https://circleci.com/docs/2.0/configuration-reference/#commands-requires-version-21
 commands:
-  build-docker-image:
-    parameters:
-      local-name:
-        type: string
-    steps:
-      - run:
-          name: Build docker image
-          command: |
-            docker build . -t << parameters.local-name >>
   upload-docker-image:
-    parameters:
-      local-name:
-        type: string
-      remote-name:
-        type: string
-      tag:
-        type: string
     steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: "~"
+      - run:
+          name: Load docker image
+          command: |
+            du -hc ~/images/*
+            docker load --input ~/images/$LOCAL_IMAGE.tar
+            docker image ls
+      - run:
+          name: Login to dockerhub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
       - run:
           name: Upload docker image
           command: |
-            tag=$(echo << parameters.tag >> | sed -e 's=/=-=')
-            remote=<< parameters.remote-name >>:$tag
-            docker tag << parameters.local-name >> $remote
-            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-            docker push $remote
+            echo "Uploading to $DOCKER_REPO"
+            CLEAN_BRANCH_NAME=${CIRCLE_BRANCH##*/}
+            # e.g. transforms 'netstats-client/pre-release' to 'pre-release'
+            docker tag $LOCAL_IMAGE $DOCKER_REPO:$CLEAN_BRANCH_NAME$CIRCLE_BUILD_NUM
+            docker push $DOCKER_REPO:$CLEAN_BRANCH_NAME$CIRCLE_BUILD_NUM
+            docker tag $LOCAL_IMAGE $DOCKER_REPO:$CLEAN_BRANCH_NAME
+            docker push $DOCKER_REPO:$CLEAN_BRANCH_NAME
 
 jobs:
-  build-and-upload:
+  build-image:
     executor: ubuntu-builder
+    environment:
+      LOCAL_IMAGE: netstats-client
     steps:
       - setup_remote_docker
       - checkout
-      - build-docker-image:
-          local-name: "netstats-client"
-      - upload-docker-image:
-          local-name: "netstats-client"
-          remote-name: "trustlines/netstats-client"
-          tag: "$CIRCLE_BRANCH$CIRCLE_BUILD_NUM"
-      - upload-docker-image:
-          local-name: "netstats-client"
-          remote-name: "trustlines/netstats-client"
-          tag: "$CIRCLE_BRANCH"
+      - run:
+          name: Build docker image
+          command: |
+            docker build . -t $LOCAL_IMAGE
+      - run:
+          name: Save docker image
+          command: |
+            mkdir -p ~/images
+            docker save --output ~/images/$LOCAL_IMAGE.tar $LOCAL_IMAGE
+            du -hc ~/images
+      - persist_to_workspace:
+          root: "~"
+          paths:
+            - images
+
+  deploy-image:
+    executor: ubuntu-builder
+    environment:
+      LOCAL_IMAGE: netstats-client
+    working_directory: ~/repo
+    steps:
+      - run:
+          name: set DOCKER_REPO
+          command: |
+            echo ': \"${DOCKER_REPO:=trustlines/netstats-client}\"' >> ${BASH_ENV}
+          # this allows us to set DOCKER_REPO from circleci when building in a
+          # fork. makes testing easier.
+      - upload-docker-image
+
+  compare-image:
+    executor: ubuntu-builder
+    environment:
+      LOCAL_IMAGE: netstats-client
+    working_directory: ~/repo
+    steps:
+      - setup_remote_docker
+      - checkout
+      - attach_workspace:
+          at: "~"
+      - run:
+          name: Load docker image
+          command: |
+            du -hc ~/images/*
+            docker load --input ~/images/$LOCAL_IMAGE.tar
+            docker image ls
+      - run:
+          name: Fetch latest pre-release
+          command: |
+            docker pull trustlines/netstats-client:pre-release
+      - run:
+          name: Compute image tree summaries
+          command: |
+            .circleci/show-docker-tree trustlines/netstats-client:pre-release >/tmp/tree-pre-release
+            .circleci/show-docker-tree $LOCAL_IMAGE >/tmp/tree-local
+      - run:
+          name: Compare image tree summaries
+          command: |
+            diff -s /tmp/tree-pre-release /tmp/tree-local || true
+
+  deploy-release-image:
+    executor: ubuntu-builder
+    environment:
+      LOCAL_IMAGE: netstats-client
+    working_directory: ~/repo
+    steps:
+      - run:
+          name: set DOCKER_REPO
+          command: |
+            echo ': \"${DOCKER_REPO:=trustlines/netstats-client}\"' >> ${BASH_ENV}
+          # this allows us to set DOCKER_REPO from circleci when building in a
+          # fork. makes testing easier.
+      - upload-docker-image
+      - run:
+          name: Upload latest image
+          command: |
+            docker tag $LOCAL_IMAGE $DOCKER_REPO:latest
+            docker push $DOCKER_REPO:latest
 
 
 workflows:
   version: 2
   default:
     jobs:
-      - build-and-upload:
+      - build-image
+      - deploy-image:
+          filters:
+            branches:
+              only:
+                - master
+                - pre-release
           context: docker-credentials
+      - compare-image:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - build-image
+      - approve-release:
+          type: approval
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - build-image
+      - deploy-release-image:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - approve-release
+          context: docker-release-credentials
