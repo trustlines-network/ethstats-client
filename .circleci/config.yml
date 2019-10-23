@@ -67,7 +67,7 @@ jobs:
       - run:
           name: set DOCKER_REPO
           command: |
-            echo ': \"${DOCKER_REPO:=trustlines/netstats-client-next}\"' >> ${BASH_ENV}
+            echo ': \"${DOCKER_REPO:=jannikluhn/netstats-client-next}\"' >> ${BASH_ENV}
           # this allows us to set DOCKER_REPO from circleci when building in a
           # fork. makes testing easier.
       - upload-docker-image
@@ -91,11 +91,11 @@ jobs:
       - run:
           name: Fetch latest pre-release
           command: |
-            docker pull trustlines/netstats-client-next:pre-release
+            docker pull jannikluhn/netstats-client-next:pre-release
       - run:
           name: Compute image tree summaries
           command: |
-            .circleci/show-docker-tree trustlines/netstats-client-next:pre-release >/tmp/tree-pre-release
+            .circleci/show-docker-tree jannikluhn/netstats-client-next:pre-release >/tmp/tree-pre-release
             .circleci/show-docker-tree $LOCAL_IMAGE >/tmp/tree-local
       - run:
           name: Compare image tree summaries
@@ -111,7 +111,7 @@ jobs:
       - run:
           name: set DOCKER_REPO
           command: |
-            echo ': \"${DOCKER_REPO:=trustlines/netstats-client}\"' >> ${BASH_ENV}
+            echo ': \"${DOCKER_REPO:=jannikluhn/netstats-client}\"' >> ${BASH_ENV}
           # this allows us to set DOCKER_REPO from circleci when building in a
           # fork. makes testing easier.
       - upload-docker-image
