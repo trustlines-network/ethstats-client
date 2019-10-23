@@ -133,6 +133,8 @@ workflows:
               only:
                 - master
                 - pre-release
+          requires:
+            - build-image
           context: docker-credentials
       - compare-image:
           filters:
