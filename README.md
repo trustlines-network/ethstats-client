@@ -2,8 +2,16 @@
 
 This is the backend service which runs along with parity and tracks the
 network status, fetches information through JSON-RPC and connects through
-WebSockets to the ethstats-server. You can view the ethstats page for the
-[trustlines testnet here](https://netstatstc1.trustlines.foundation/)
+WebSockets to the ethstats-server. You can view the ethstats page for the 
+[Trustlines Blockchain](https://netstats.tlbc.trustlines.foundation/) here and for the 
+[trustlines testnet here](https://laikanetstats.trustlines.foundation/).
+
+The netstats page gives a rough overview of the current network state.
+It is an optional component of the Trustlines Blockchain / Laika 
+which helps the community by providing information on running nodes to a central server.
+
+To participate, validators need to request credentials managed by the Trustlines Foundation.
+Please email `netstats@trustlines.foundation` to do so.
 
 ## Installation as docker container
 
@@ -35,5 +43,5 @@ This command assumes that your container running parity is named
 E.g. with the following command you could connect to a parity instance running on the local machine:
 
 ```
-docker run --name netstats -d --restart=always --env-file netstats-env -eRPC_HOST=127.0.0.1 --network=host trustlines/netstats-client:master
+docker run --name netstats -d --restart=always --env-file netstats-env -e RPC_HOST=127.0.0.1 --network=host trustlines/netstats-client:master
 ```
