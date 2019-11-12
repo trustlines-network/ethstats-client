@@ -4,7 +4,7 @@ This is the backend service which runs along with parity and tracks the
 network status, fetches information through JSON-RPC and connects through
 WebSockets to the ethstats-server. You can view the ethstats page for the 
 [Trustlines Blockchain](https://netstats.tlbc.trustlines.foundation/) here and for the 
-[trustlines testnet here](https://laikanetstats.trustlines.foundation/).
+[trustlines testnet here](https://netstats.laika.trustlines.foundation/).
 
 The netstats page gives a rough overview of the current network state.
 It is an optional component of the Trustlines Blockchain / Laika 
