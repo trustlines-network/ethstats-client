@@ -18,3 +18,5 @@
 4. Authorize the release in CircleCI.
 5. Check that the image is built and pushed to Docker Hub under
    `trustlines/netstats-client:release`.
+6. Merge back the changes from the release branch into master.
+
