@@ -2,12 +2,12 @@
 
 ## Release Checklist
 
-0. Prerequsisite: The master branch contains the version to be
+0. Prerequisite: The `master` branch contains the version to be
    released
 1. Open and merge a PR `master` -> `pre-release` without waiting for
    a review, which will push a new image to Docker Hub under the
    name `netstats-client-next:pre-release`.
-2. Test the pre-release:
+2. Test the `pre-release`:
    - Pull the new image from Docker Hub.
    - Run the netstats client in a pre-existing environment set up
      using the quickstart script and check that it reports properly
